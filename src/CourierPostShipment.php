@@ -8,17 +8,16 @@ use Sylapi\Courier\Contracts\Booking;
 
 use Sylapi\Courier\Ups\Responses\Parcel as ParcelResponse;
 use Sylapi\Courier\Exceptions\ValidateException;
-use Sylapi\Courier\Ups\Helpers\ApiErrorsHelper;
 use Sylapi\Courier\Exceptions\TransportException;
-use OlzaApiClient\Entities\Response\ApiBatchResponse;
 use Sylapi\Courier\Ups\Helpers\ValidateErrorsHelper;
-use OlzaApiClient\Entities\Helpers\PostShipmentsEnity;
-use Sylapi\Courier\Contracts\Response as ResponseContract;
 use Sylapi\Courier\Contracts\CourierPostShipment as CourierPostShipmentContract;
-use Sylapi\Courier\Ups\Entities\Parcel;
+use Sylapi\Courier\Ups\Entities\Booking as UpsBooking;
+use Sylapi\Courier\Ups\Entities\Credentials;
 
 class CourierPostShipment implements CourierPostShipmentContract
 {
+    const API_PATH = '/api/pickupcreation/v1/pickup';
+
     private $session;
 
     public function __construct(Session $session)
@@ -35,18 +34,89 @@ class CourierPostShipment implements CourierPostShipmentContract
         }
 
         try {
-            //TODO:
-            var_dump( $this->session );
+
+            /**
+             * @var UpsBooking $booking
+             */
+            $payload = $this->getPayload($booking, $this->session->credentials());
+            $response->setRequest($payload);
+
+            $stream = $this->session
+            ->client()
+            ->request(
+                'POST',
+                self::API_PATH,
+                [ 'body' => json_encode($payload) ]
+            );
+
+            $result = json_decode($stream->getBody()->getContents());
+            $response->setResponse($result);
+
         } catch (\Exception $e) {
             throw new TransportException($e->getMessage(), $e->getCode());
         }
 
-        $response->setResponse('OK');
-        $response->setShipmentId('111');
-        $response->setTrackingId('111');
-        $response->setTrackingBarcode('111');
-        $response->setTrackingUrl('http://example.com');
+        
+        $response->setShipmentId($booking->getShipmentId());
         
         return $response;
+    }
+
+
+    private function getPayload(UpsBooking $booking, Credentials $credentials)
+    {
+        $pickupAddress = $booking->getPickupAddress();
+        
+
+        $pickupPiece = array_map(function($shipment) {
+            return [
+                "ServiceCode" => '001', //TODO:
+                "Quantity" => (string) $shipment->getQuantity(),
+                "DestinationCountryCode" => $shipment->getReceiver()->getCountryCode(),
+                "ContainerCode" => $shipment->getParcel()->getContainerCode()
+            ];
+        }, $booking->getShipments());
+
+
+        $payload = array(
+            "PickupCreationRequest" => array(
+              "RatePickupIndicator" => "N",
+              "Shipper" => array(
+                "Account" => array(
+                  "AccountNumber" => $credentials->getShipperNumber(),
+                  "AccountCountryCode" => $credentials->getShipperCountryCode()
+                )
+              ),
+              "PickupDateInfo" => array(
+                "CloseTime" => $booking->getPickupCloseTime(),
+                "ReadyTime" => $booking->getPickupReadyTime(),
+                "PickupDate" => $booking->getPickupDate()
+              ),
+              'PickupAddress' => [
+                'CompanyName' => $pickupAddress->getFullName(),
+                'ContactName' => $pickupAddress->getContactPerson(),
+                'AddressLine' => $pickupAddress->getAddress(),
+                'Room' => $pickupAddress->getApartmentNumber(),
+                'City' => $pickupAddress->getCity(),
+                'PostalCode' => $pickupAddress->getZipCode(),
+                'CountryCode' => $pickupAddress->getCountryCode(),
+                'ResidentialIndicator' => $pickupAddress->getResidentialIndicator(),
+                'PickupPoint' => $pickupAddress->getResidentialIndicator(),
+                'Phone' => [
+                  'Number' => $pickupAddress->getPhone(),
+                ]
+              ],
+              "AlternateAddressIndicator" => "N",
+              "PickupPiece" => $pickupPiece,
+              "TotalWeight" => array(
+                "Weight" => $booking->getTotalWeight(),
+                "UnitOfMeasurement" => $booking->getUnitOfWeightCode()
+              ),
+              "OverweightIndicator" => "N",
+              "PaymentMethod" => "01",
+            )
+          );
+
+        return $payload;
     }
 }

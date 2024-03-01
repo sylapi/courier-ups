@@ -11,8 +11,9 @@ class SessionFactory
     private $sessions = [];
 
     //These constants can be extracted into injected configuration
-    const API_LIVE = 'https://';
-    const API_SANDBOX = 'https://';
+    // const API_LIVE = 'https://onlinetools.ups.com';
+    const API_LIVE = 'https://wwwcie.ups.com';
+    const API_SANDBOX = 'https://wwwcie.ups.com';
 
     public function session(Credentials $credentials): Session
     {

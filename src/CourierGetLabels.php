@@ -11,6 +11,9 @@ use Sylapi\Courier\Contracts\LabelType as LabelTypeContract;
 
 class CourierGetLabels implements CourierGetLabelsContract
 {
+
+    const API_PATH = '/api/labels/v1/recovery';
+    
     private $session;
 
     public function __construct(Session $session)
@@ -21,13 +24,39 @@ class CourierGetLabels implements CourierGetLabelsContract
     public function getLabel(string $shipmentId, LabelTypeContract $labelType): LabelResponse
     {
         try {
-            //TODO:
-            var_dump( $this->session );
+            $payload = $this->getPayload([$shipmentId], $labelType);
+            $stream = $this->session
+            ->client()
+            ->request(
+                'POST',
+                self::API_PATH,
+                [ 'body' => json_encode($payload) ]
+            );
+
+            $result = json_decode($stream->getBody()->getContents());
+
+            $labelContent = $result?->LabelRecoveryResponse?->LabelResults?->LabelImage?->GraphicImage ?? null;
+
+            if($labelContent === null) {
+                throw new TransportException('Label not found', 404);
+            }
+           
         } catch (\Exception $e) {
             throw new TransportException($e->getMessage(), $e->getCode());
         }
 
-        return new LabelResponse(base64_decode('CONTENT'));
+        return new LabelResponse($labelContent);
+    }
+
+    private function getPayload(array $shipmentId, LabelTypeContract $labelType): array
+    {
+        $payload = [
+          'LabelRecoveryRequest' => [
+            'TrackingNumber' => $shipmentId,
+          ]
+        ];
+        
+        return $payload;
     }
 
     

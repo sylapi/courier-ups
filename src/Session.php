@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sylapi\Courier\Ups;
 
 use Sylapi\Courier\Ups\Entities\Credentials;
+use GuzzleHttp\Client;
 
 class Session
 {
@@ -25,11 +26,34 @@ class Session
         return $this->client;
     }
 
+    public function credentials(): Credentials
+    {
+        return $this->credentials;
+    }
+
     private function initializeSession()
     {
-        var_dump($this->credentials);
+        /**
+         * @var Credentials $credentials
+         */
+        $credentials = $this->credentials;
+        $this->client = new Client([
+            'base_uri' => $credentials->getApiUrl(),
+            'headers'  => [
+                'Content-Type'  => 'application/json',
+                'Authorization' => 'Bearer '.$this->token(),
+                'transId' =>  $credentials->getTransId(),
+                'transactionSrc' => $credentials->getTransactionSrc(),
+            ],
+        ]);
+
         return $this->client;
     }
 
+    private function token()
+    {
+        return 'token';   
+    }
+    
 
 }

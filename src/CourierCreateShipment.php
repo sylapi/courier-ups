@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace Sylapi\Courier\Ups;
 
-use OlzaApiClient\Entities\Helpers\NewShipmentEnity;
-use OlzaApiClient\Entities\Response\ApiBatchResponse;
-use Sylapi\Courier\Contracts\CourierCreateShipment as CourierCreateShipmentContract;
 use Sylapi\Courier\Contracts\Shipment;
-use Sylapi\Courier\Exceptions\TransportException;
+use Sylapi\Courier\Ups\Entities\Parcel;
+use Sylapi\Courier\Ups\Entities\Options;
+use Sylapi\Courier\Ups\Entities\Credentials;
 use Sylapi\Courier\Exceptions\ValidateException;
-use Sylapi\Courier\Helpers\ReferenceHelper;
-use Sylapi\Courier\Ups\Responses\Shipment as ShipmentResponse;
-use Sylapi\Courier\Ups\Helpers\ApiErrorsHelper;
+use Sylapi\Courier\Exceptions\TransportException;
 use Sylapi\Courier\Ups\Helpers\ValidateErrorsHelper;
-use Sylapi\Courier\Ups\Services\COD;
-use Sylapi\Courier\Ups\Services\PickupPoint;
 
-
-
+use Sylapi\Courier\Ups\Responses\Shipment as ShipmentResponse;
+use Sylapi\Courier\Contracts\CourierCreateShipment as CourierCreateShipmentContract;
 
 class CourierCreateShipment implements CourierCreateShipmentContract
 {
+
+  const API_PATH = '/api/shipments/v1/ship';
+
     private $session;
 
     public function __construct(Session $session)
@@ -39,16 +37,157 @@ class CourierCreateShipment implements CourierCreateShipmentContract
 
         try {
             //TODO:
-            var_dump( $this->session );
-            $response->setRequest('RESPONSE');
+            // var_dump( $this->session );
+
+            $payload = $this->getPayload($shipment, $this->session->credentials());
+            // var_dump($payload);
+            $response->setRequest($payload);
+            $stream = $this->session
+            ->client()
+            ->request(
+                'POST',
+                self::API_PATH,
+                [ 'body' => json_encode($payload) ]
+            );
+
+            $result = json_decode($stream->getBody()->getContents());
+
+            // var_dump($result);
+            $response->setRequest($result);
         } catch (\Exception $e) {
             throw new TransportException($e->getMessage(), $e->getCode());
         }
 
-        $response->setResponse('RESPONSE');
-        $response->setReferenceId((string) 1111);
-        $response->setShipmentId((string) 222);
+        $response->setResponse($response);
 
+        $response->setReferenceId((string) $result->ShipmentResponse?->Response?->TransactionReference?->TransactionIdentifier);
+        $response->setShipmentId((string) $result->ShipmentResponse?->ShipmentResults?->ShipmentIdentificationNumber);
         return $response;
+    }
+
+    private function getPayload(Shipment $shipment, Credentials $credentials)
+    {
+        /**
+         * @var Options $options
+         */
+        $options = $shipment->getOptions();
+        $sender = $shipment->getSender();
+        $receiver = $shipment->getReceiver();
+        /**
+         * @var Parcel $parcel
+         */
+        $parcel = $shipment->getParcel();
+
+        $payload = [
+            'ShipmentRequest' => [
+                'Request' => [
+                    'RequestOption' => $options->getRequestOption()
+                ],
+                'Shipment' => [
+                  'Shipper' => [
+                      'Name' => $sender->getFullName(),
+                      "AttentionName" => $sender->getFullName(),
+                      'Phone' => [
+                        'Number' => $sender->getPhone(),
+                      ],
+                      'ShipperNumber' => $credentials->getShipperNumber(),
+                      'Address' => [
+                          'AddressLine' => [
+                              $sender->getAddress()
+                          ],
+                          'City' => $sender->getCity(),
+                          'PostalCode' => $sender->getZipCode(),
+                          'CountryCode' => $sender->getCountryCode()
+                      ]
+                  ],
+                
+                  'ShipTo' => [
+                      'Name' => $receiver->getFullName(),
+                      "AttentionName" => $receiver->getFullName(),
+                      'Phone' => [
+                        'Number' => $receiver->getPhone()
+                      ],
+                      'Address' => [
+                          'AddressLine' => [
+                              $receiver->getAddress()                          
+                          ],
+                          'City' => $receiver->getCity(),
+                          'PostalCode' => $receiver->getZipCode(),
+                          'CountryCode' => $receiver->getCountryCode()
+                      ],
+                  ],
+
+                  'ShipFrom' => [
+                    'Name' => $sender->getFullName(),
+                    'Phone' => [
+                      'Number' => $sender->getPhone()
+                    ],
+                    'Address' => [
+                        'AddressLine' => [
+                            $sender->getAddress()                          
+                        ],
+                        'City' => $sender->getCity(),
+                        'PostalCode' => $sender->getZipCode(),
+                        'CountryCode' => $sender->getCountryCode()
+                    ],
+                  ],
+                  'PaymentInformation' => [
+                    'ShipmentCharge' => [
+                      'Type' => $options->getPackagingCode(),
+                      'BillShipper' => [
+                        'AccountNumber' => $credentials->getShipperNumber()
+                      ]
+                    ]
+                  ],
+                  'Service' => [
+                    'Code' => $options->getSpeditionCode(),
+                  ],
+                  'Package' => [
+                    'Packaging' => [
+                      'Code' => '02',
+                    ],
+                    'Dimensions' => [
+                      'UnitOfMeasurement' => [
+                        'Code' => $parcel->getUnitOfDimensionsCode(),
+                        'Description' => $parcel->getUnitOfDimensionsDescription()
+                      ],
+                      'Length' => (string) $parcel->getLength(),
+                      'Width' => (string) $parcel->getWidth(),
+                      'Height' => (string) $parcel->getHeight()
+                    ],
+                    'PackageWeight' => [
+                      'UnitOfMeasurement' => [
+                        'Code' => $parcel->getUnitOfWeightCode(),
+                        'Description' => $parcel->getUnitOfWeightDescription()
+                      ],
+                      'Weight' => (string) $parcel->getWeight()
+                    ]
+                  ]
+                ],
+                'LabelSpecification' => [
+                  'LabelImageFormat' => [
+                    'Code' => 'GIF',
+                    'Description' => 'GIF'
+                  ],
+                  'HTTPUserAgent' => 'Mozilla/4.5'
+                ]
+            ]
+        ];
+
+        if($options->get('subVersion')) {
+            $payload['ShipmentRequest']['Request']['SubVersion'] = $options->get('subVersion');
+        }
+
+        if($shipment->getReferenceId()) {
+            $payload['ShipmentRequest']['Request']['TransactionReference'] = [
+                'CustomerContext' => $shipment->getReferenceId()
+            ];
+        }
+
+        if($shipment->getContent()) {
+            $payload['ShipmentRequest']['Shipment']['Description'] = $shipment->getContent();
+        }
+
+        return $payload;
     }
 }
