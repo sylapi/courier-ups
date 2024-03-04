@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sylapi\Courier\Ups\Enums;
 
-
 enum SpeditionCode: string {
     case NEXT_DAY_AIR = '01';
     case SECOND_DAY_AIR = '02';

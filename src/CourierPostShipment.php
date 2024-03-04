@@ -6,13 +6,15 @@ namespace Sylapi\Courier\Ups;
 
 use Sylapi\Courier\Contracts\Booking;
 
-use Sylapi\Courier\Ups\Responses\Parcel as ParcelResponse;
+use Sylapi\Courier\Ups\Enums\SpeditionCode;
+use Sylapi\Courier\Ups\Entities\Credentials;
 use Sylapi\Courier\Exceptions\ValidateException;
 use Sylapi\Courier\Exceptions\TransportException;
+use Sylapi\Courier\Ups\Helpers\SpeditionCodeMapper;
 use Sylapi\Courier\Ups\Helpers\ValidateErrorsHelper;
-use Sylapi\Courier\Contracts\CourierPostShipment as CourierPostShipmentContract;
 use Sylapi\Courier\Ups\Entities\Booking as UpsBooking;
-use Sylapi\Courier\Ups\Entities\Credentials;
+use Sylapi\Courier\Ups\Responses\Parcel as ParcelResponse;
+use Sylapi\Courier\Contracts\CourierPostShipment as CourierPostShipmentContract;
 
 class CourierPostShipment implements CourierPostShipmentContract
 {
@@ -69,8 +71,14 @@ class CourierPostShipment implements CourierPostShipmentContract
         
 
         $pickupPiece = array_map(function($shipment) {
+            $speditionCode = $shipment->getOptions()?->getSpeditionCode() ?? null;
+
+            if($speditionCode === null) {
+                throw new \Exception('Spedition code is required');
+            }
+
             return [
-                "ServiceCode" => '001', //TODO:
+                "ServiceCode" => SpeditionCodeMapper::mapToPickupSpeditionCode(SpeditionCode::from($speditionCode)),
                 "Quantity" => (string) $shipment->getQuantity(),
                 "DestinationCountryCode" => $shipment->getReceiver()->getCountryCode(),
                 "ContainerCode" => $shipment->getParcel()->getContainerCode()
@@ -78,20 +86,20 @@ class CourierPostShipment implements CourierPostShipmentContract
         }, $booking->getShipments());
 
 
-        $payload = array(
-            "PickupCreationRequest" => array(
+        $payload = [
+            "PickupCreationRequest" => [
               "RatePickupIndicator" => "N",
-              "Shipper" => array(
-                "Account" => array(
+              "Shipper" => [
+                "Account" => [
                   "AccountNumber" => $credentials->getShipperNumber(),
                   "AccountCountryCode" => $credentials->getShipperCountryCode()
-                )
-              ),
-              "PickupDateInfo" => array(
+                ]
+              ],
+              "PickupDateInfo" => [
                 "CloseTime" => $booking->getPickupCloseTime(),
                 "ReadyTime" => $booking->getPickupReadyTime(),
                 "PickupDate" => $booking->getPickupDate()
-              ),
+              ],
               'PickupAddress' => [
                 'CompanyName' => $pickupAddress->getFullName(),
                 'ContactName' => $pickupAddress->getContactPerson(),
@@ -108,14 +116,14 @@ class CourierPostShipment implements CourierPostShipmentContract
               ],
               "AlternateAddressIndicator" => "N",
               "PickupPiece" => $pickupPiece,
-              "TotalWeight" => array(
+              "TotalWeight" => [
                 "Weight" => $booking->getTotalWeight(),
                 "UnitOfMeasurement" => $booking->getUnitOfWeightCode()
-              ),
+              ],
               "OverweightIndicator" => "N",
               "PaymentMethod" => "01",
-            )
-          );
+            ]
+        ];
 
         return $payload;
     }
