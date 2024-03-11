@@ -49,7 +49,8 @@ class CourierCreateShipment implements CourierCreateShipmentContract
             );
 
             $result = json_decode($stream->getBody()->getContents());
-            $response->setRequest($result);
+            $response->setResponse($result);
+
         } catch (\Exception $e) {
             throw new TransportException($e->getMessage(), $e->getCode());
         }
