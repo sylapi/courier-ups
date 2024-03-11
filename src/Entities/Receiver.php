@@ -9,6 +9,14 @@ use Sylapi\Courier\Abstracts\Receiver as ReceiverAbstract;
 
 class Receiver extends ReceiverAbstract
 {
+    private ?string $countryCode = null;
+
+    public function getCountryCode(): ?string
+    {
+        return ($this->countryCode === null) ? null: strtoupper($this->countryCode);
+    }
+
+
     public function validate(): bool
     {
         $rules = [
