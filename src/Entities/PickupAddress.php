@@ -11,13 +11,12 @@ class PickupAddress extends Address
 {
     private ?string $pickupPoint = null;
     private bool $residentialIndicator = false;
-    private ?string $countryCode = null;
 
     public function getCountryCode(): ?string
     {
-        return ($this->countryCode === null) ? null: strtoupper($this->countryCode);
+        $countryCode = parent::getCountryCode();
+        return ($countryCode === null) ? null: strtoupper($countryCode);
     }
-
 
     public function setPickupPoint(string $pickupPoint): self
     {

@@ -9,13 +9,11 @@ use Sylapi\Courier\Abstracts\Sender as SenderAbstract;
 
 class Sender extends SenderAbstract
 {
-    private ?string $countryCode = null;
-
     public function getCountryCode(): ?string
     {
-        return ($this->countryCode === null) ? null: strtoupper($this->countryCode);
+        $countryCode = parent::getCountryCode();
+        return ($countryCode === null) ? null: strtoupper($countryCode);
     }
-
 
     public function validate(): bool
     {
