@@ -36,11 +36,9 @@ class CourierCreateShipment implements CourierCreateShipmentContract
         }
 
         try {
-            //TODO:
-            // var_dump( $this->session );
 
             $payload = $this->getPayload($shipment, $this->session->credentials());
-            // var_dump($payload);
+
             $response->setRequest($payload);
             $stream = $this->session
             ->client()
@@ -51,8 +49,6 @@ class CourierCreateShipment implements CourierCreateShipmentContract
             );
 
             $result = json_decode($stream->getBody()->getContents());
-
-            // var_dump($result);
             $response->setRequest($result);
         } catch (\Exception $e) {
             throw new TransportException($e->getMessage(), $e->getCode());
