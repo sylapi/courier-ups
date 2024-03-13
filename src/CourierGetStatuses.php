@@ -29,11 +29,13 @@ class CourierGetStatuses implements CourierGetStatusesContract
                 'returnMilestones' => 'false'
             ];
 
+            $payload = self::API_PATH . $shipmentId . "?" . http_build_query($query);
+
             $stream = $this->session
               ->client()
               ->request(
                   'GET',
-                  self::API_PATH . $shipmentId . "?" . http_build_query($query)
+                  $payload
               );
               
                 $result = json_decode($stream->getBody()->getContents());
@@ -49,14 +51,10 @@ class CourierGetStatuses implements CourierGetStatusesContract
         }
         
 
-        return new StatusResponse((string) new StatusTransformer($originalStatus), $originalStatus);
-    }
-
-    public function getPayload(string $shipmentId): array
-    {
-        return [
-            'shipmentId' => $shipmentId
-        ];
+        $statusResponse = new StatusResponse((string) new StatusTransformer($originalStatus), $originalStatus);
+        $statusResponse->setRequest($payload);
+        $statusResponse->setResponse($result);
+        return $statusResponse;
     }
 
 }

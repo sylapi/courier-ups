@@ -53,6 +53,7 @@ class CourierPostShipment implements CourierPostShipmentContract
 
             $result = json_decode($stream->getBody()->getContents());
             $response->setResponse($result);
+            $response->setTrackingId($booking->getShipmentId());
 
         } catch (\Exception $e) {
             throw new TransportException($e->getMessage(), $e->getCode());
