@@ -45,7 +45,7 @@ class CourierGetLabels implements CourierGetLabelsContract
             throw new TransportException($e->getMessage(), $e->getCode());
         }
 
-        return new LabelResponse($labelContent);
+        return new LabelResponse(base64_decode($labelContent));
     }
 
     private function getPayload(array $shipmentId, LabelTypeContract $labelType): array
