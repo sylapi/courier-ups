@@ -1,0 +1,128 @@
+{
+  "trackResponse": {
+    "shipment": [
+      {
+        "inquiryNumber": "1Z023E2X0214323462",
+        "package": [
+          {
+            "accessPointInformation": {
+              "pickupByDate": "string"
+            },
+            "activity": [
+              {
+                "date": null,
+                "gmtDate": null,
+                "gmtOffset": null,
+                "gmtTime": null,
+                "location": null,
+                "status": {
+                  "description": "DELIVERED"
+                },
+                "time": null
+              }
+            ],
+            "additionalAttributes": [
+              "SENSOR_EVENT"
+            ],
+            "additionalServices": [
+              "ADULT_SIGNATURE_REQUIRED",
+              "SIGNATURE_REQUIRED",
+              "ADDITIONAL_HANDLING",
+              "CARBON_NEUTRAL",
+              "UPS_PREMIER_SILVER",
+              "UPS_PREMIER_GOLD",
+              "UPS_PREMIER_PLATINUM"
+            ],
+            "alternateTrackingNumber": [
+              {
+                "number": null,
+                "type": null
+              }
+            ],
+            "currentStatus": {
+              "code": "SR",
+              "description": "Your package was released by the customs agency.",
+              "simplifiedTextDescription": "Delivered",
+              "statusCode": "003",
+              "type": "X"
+            },
+            "deliveryDate": [
+              {
+                "date": null,
+                "type": null
+              }
+            ],
+            "deliveryInformation": {
+              "location": "Front Door",
+              "receivedBy": "",
+              "signature": {
+                "image": null
+              }
+            },
+            "deliveryTime": {
+              "endTime": "string",
+              "startTime": "string",
+              "type": "string"
+            },
+            "milestones": [
+              {
+                "category": null,
+                "code": null,
+                "current": null,
+                "description": null,
+                "linkedActivity": null,
+                "state": null,
+                "subMilestone": null
+              }
+            ],
+            "packageAddress": [
+              {
+                "address": null,
+                "attentionName": null,
+                "name": null,
+                "type": null
+              }
+            ],
+            "packageCount": 2,
+            "paymentInformation": [
+              {
+                "amount": null,
+                "currency": null,
+                "id": null,
+                "paid": null,
+                "paymentMethod": null,
+                "type": null
+              }
+            ],
+            "referenceNumber": [
+              {
+                "number": null,
+                "type": null
+              }
+            ],
+            "service": {
+              "code": "518",
+              "description": "UPS Ground",
+              "levelCode": "011"
+            },
+            "statusCode": "string",
+            "statusDescription": "string",
+            "suppressionIndicators": "DETAIL",
+            "trackingNumber": "string",
+            "weight": {
+              "unitOfMeasurement": "string",
+              "weight": "string"
+            }
+          }
+        ],
+        "userRelation": "MYCHOICE_HOME",
+        "warnings": [
+          {
+            "code": "string",
+            "message": "string"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "PickupCreationResponse": {
+    "Response": {
+      "ResponseStatus": {
+        "Code": "s",
+        "Description": "string"
+      },
+      "Alert": {
+        "Code": "string",
+        "Description": "string"
+      },
+      "TransactionReference": {
+        "CustomerContext": "string"
+      }
+    },
+    "PRN": "stringstrin",
+    "WeekendServiceTerritory": {
+      "SatWST": "s",
+      "SunWST": "s"
+    },
+    "WeekendServiceTerritoryIndicator": "s",
+    "RateStatus": {
+      "Code": "st",
+      "Description": "string"
+    },
+    "RateResult": {
+      "Disclaimer": {
+        "Code": "st",
+        "Description": "string"
+      },
+      "RateType": "st",
+      "CurrencyCode": "str",
+      "ChargeDetail": [
+        {
+          "ChargeCode": "s",
+          "ChargeDescription": "string",
+          "ChargeAmount": "stringst",
+          "IncentedAmount": "stringst",
+          "TaxAmount": "stringst"
+        }
+      ],
+      "TaxCharges": [
+        {
+          "Type": "str",
+          "MonetaryValue": "stringst"
+        }
+      ],
+      "TotalTax": "stringst",
+      "GrandTotalOfAllCharge": "stringst",
+      "GrandTotalOfAllIncentedCharge": "string",
+      "PreTaxTotalCharge": "stringst",
+      "PreTaxTotalIncentedCharge": "string"
+    }
+  }
+}

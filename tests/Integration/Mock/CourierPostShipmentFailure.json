@@ -1,0 +1,8 @@
+{
+    "errors": [
+      {
+        "code": "VSS300",
+        "message": "Locale is required. The Subscription request has been rejected."
+      }
+    ]
+}
