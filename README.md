@@ -3,7 +3,7 @@
 
 ## Init
 
-```
+```php
 $courier = \Sylapi\Courier\CourierFactory::create('Ups',[
     'login' => 'client_id',
     'password' => 'secret',
@@ -17,7 +17,7 @@ $courier = \Sylapi\Courier\CourierFactory::create('Ups',[
 
 ## CreateShipment
 
-```
+```php
 $sender = $courier->makeSender();
 $sender->setFullName('Nazwa Firmy/Nadawca')
     ->setStreet('Ulica')
@@ -82,8 +82,7 @@ try {
 
 ## PostShipment
 
-```
-
+```php
 try {
     /**
     * @var \Sylapi\Courier\Ups\Entities\Booking $booking
@@ -118,7 +117,7 @@ try {
 
 ## GetStatus
 
-```
+```php
 try {  
     $responseStatus = $courier->getStatus($response->getShipmentId());
 
@@ -132,7 +131,7 @@ try {
 
 ## GetLabel
 
-```
+```php
 try {
 
     $labelType = $courier->makeLabelType();
