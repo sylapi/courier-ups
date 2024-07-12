@@ -11,6 +11,7 @@ use Sylapi\Courier\Ups\Entities\Credentials;
 use Sylapi\Courier\Exceptions\ValidateException;
 use Sylapi\Courier\Exceptions\TransportException;
 use Sylapi\Courier\Ups\Helpers\ValidateErrorsHelper;
+use Sylapi\Courier\Ups\Entities\Shipment as ShipmentEntity;
 
 use Sylapi\Courier\Ups\Responses\Shipment as ShipmentResponse;
 use Sylapi\Courier\Contracts\CourierCreateShipment as CourierCreateShipmentContract;
@@ -66,6 +67,7 @@ class CourierCreateShipment implements CourierCreateShipmentContract
     {
         /**
          * @var Options $options
+         * @var ShipmentEntity $shipment
          */
         $options = $shipment->getOptions();
         $sender = $shipment->getSender();
@@ -81,6 +83,7 @@ class CourierCreateShipment implements CourierCreateShipmentContract
                     'RequestOption' => $options->getRequestOption()
                 ],
                 'Shipment' => [
+                  'Description' => $shipment->getContent(),
                   'Shipper' => [
                       'Name' => $sender->getFullName(),
                       "AttentionName" => $sender->getFullName(),
@@ -163,13 +166,21 @@ class CourierCreateShipment implements CourierCreateShipmentContract
                 ],
                 'LabelSpecification' => [
                   'LabelImageFormat' => [
-                    'Code' => 'GIF',
-                    'Description' => 'GIF'
+                    'Code' => $shipment->getLabelType()->getLabelType()
                   ],
                   'HTTPUserAgent' => 'Mozilla/4.5'
                 ]
             ]
         ];
+
+        $services = $shipment->getServices();
+        
+        if($services) {
+            foreach($services as $service) {
+                $service->setRequest($payload);
+                $payload = $service->handle();
+            }
+        } 
 
         if($options->get('subVersion')) {
             $payload['ShipmentRequest']['Request']['SubVersion'] = $options->get('subVersion');
@@ -185,6 +196,7 @@ class CourierCreateShipment implements CourierCreateShipmentContract
             $payload['ShipmentRequest']['Shipment']['Description'] = $shipment->getContent();
         }
 
+        // var_dump($payload);
         return $payload;
     }
 }

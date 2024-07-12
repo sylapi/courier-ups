@@ -9,6 +9,7 @@ use Sylapi\Courier\Ups\Responses\Status as StatusResponse;
 use Sylapi\Courier\Contracts\CourierGetStatuses as CourierGetStatusesContract;
 
 
+
 class CourierGetStatuses implements CourierGetStatusesContract
 {
     const API_PATH = '/api/track/v1/details/';

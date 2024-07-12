@@ -2,7 +2,7 @@
 
 namespace Sylapi\Courier\Ups\Exceptions;
 
-class PayloadException extends \Exception
+class ResponseException extends \Exception
 {
 
 }

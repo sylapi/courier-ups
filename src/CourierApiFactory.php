@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Sylapi\Courier\Ups;
 
-use Sylapi\Courier\Courier;
+
+use Sylapi\Courier\Ups\Courier;
+use Sylapi\Courier\Ups\CourierUtilities;
 use Sylapi\Courier\Ups\Entities\Credentials;
+
+
 class CourierApiFactory
 {
     private $sessionFactory;
@@ -35,6 +39,7 @@ class CourierApiFactory
             new CourierMakeOptions(),
             new CourierMakeBooking(),
             new CourierMakeLabelType(),
+            new CourierUtilities($session)
         );
     }
 }
