@@ -18,17 +18,7 @@ class CourierUtilities
     public function transitTimes(Entities\TransitTimes $transitTimes): Responses\TransitTimes
     { 
         return (new Utilities\TransitTimes($this->session))->transitTimes($transitTimes);
-    } 
-
-    public function makeCosts(): Entities\Costs
-    {
-        return new Entities\Costs();
     }
-
-    public function costs(Entities\Costs $costs): Responses\Costs
-    { 
-        return (new Utilities\Costs($this->session))->costs($costs);
-    } 
 
     public function makeRating(): Entities\Rating
     {
