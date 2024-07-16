@@ -51,19 +51,17 @@ class Rating
                 ]
             );
 
+            $shipment = $rating->getShipment();
+            /**
+             * @var Options $options
+             */
+            $options = $shipment->getOptions();            
             $result = json_decode($stream->getBody()->getContents());
             $response->setResponse($result);
+            $response->setServiceCode($options->getSpeditionCode() ?? null);
             $response->fill();
 
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-
-            $response = $e->getResponse();
-            $responseBodyAsString = $response->getBody()->getContents();
-
-        //     var_dump($responseBodyAsString);
-        //     var_dump($payloadData);
-        //    echo  json_encode($payloadData, JSON_PRETTY_PRINT);
-
+        } catch (\Exception $e) {
             throw new TransportException($e->getMessage(), $e->getCode());
         }
         

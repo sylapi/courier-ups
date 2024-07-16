@@ -11,6 +11,8 @@ class Rating extends ResponseAbstract implements ResponseContract
     private ?string $arrivalDateTime = NULL;
     private ?string $totalCharge;
     private ?string $currencyCode;
+    private ?string $serviceCode;
+    private ?string $serviceDescription;
 
     public function setTotalCharge(string $totalCharge): self
     {
@@ -48,6 +50,31 @@ class Rating extends ResponseAbstract implements ResponseContract
         return $this->arrivalDateTime;
     }
 
+    public function setServiceCode(?string $serviceCode): self
+    {
+        $this->serviceCode = $serviceCode;
+
+        return $this;
+    }
+
+    public function getServiceCode(): ?string
+    {
+        return $this->serviceCode;
+    }
+
+    public function setServiceDescription(?string $serviceDescription): self
+    {
+        $this->serviceDescription = $serviceDescription;
+
+        return $this;
+    }
+
+    public function getServiceDescription(): ?string
+    {
+        return $this->serviceDescription;
+    }
+
+
     public function fill(): self
     {
         $response = $this->getResponse();
@@ -60,7 +87,8 @@ class Rating extends ResponseAbstract implements ResponseContract
         } 
 
         $this->setTotalCharge($response->RateResponse->RatedShipment->TotalCharges->MonetaryValue ?? null)
-            ->setCurrencyCode($response->RateResponse->RatedShipment->TotalCharges->CurrencyCode ?? null);
+            ->setCurrencyCode($response->RateResponse->RatedShipment->TotalCharges->CurrencyCode ?? null)
+            ->setServiceDescription($response->RateResponse->RatedShipment->TimeInTransit->ServiceSummary->Service->Description ?? null);
 
         return $this;
     }
