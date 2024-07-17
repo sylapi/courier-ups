@@ -8,6 +8,12 @@ use Sylapi\Courier\Abstracts\Credentials as CredentialsAbstract;
 
 class Credentials extends CredentialsAbstract
 {
+
+    public function isDebug(): bool
+    {
+        return $this->get('debug', false);
+    }
+
     public function setShipperNumber(string $shipperNumber): self
     {
         $this->set('shipperNumber', $shipperNumber);

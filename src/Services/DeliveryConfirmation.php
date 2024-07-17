@@ -26,8 +26,8 @@ class DeliveryConfirmation extends Service implements ServiceContract, Validatab
 
     public function handle(): array
     {
-        if(null !== $this->getRequest()){
-            return  $this->getRequest();
+        if(null === $this->getRequest()){
+            throw new \Exception('Request is empty');
         }
         
         $payload = $this->getRequest();

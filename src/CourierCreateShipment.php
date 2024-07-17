@@ -180,7 +180,7 @@ class CourierCreateShipment implements CourierCreateShipmentContract
                 $service->setRequest($payload);
                 $payload = $service->handle();
             }
-        } 
+        }
 
         if($options->get('subVersion')) {
             $payload['ShipmentRequest']['Request']['SubVersion'] = $options->get('subVersion');
@@ -196,7 +196,6 @@ class CourierCreateShipment implements CourierCreateShipmentContract
             $payload['ShipmentRequest']['Shipment']['Description'] = $shipment->getContent();
         }
 
-        // var_dump($payload);
         return $payload;
     }
 }

@@ -20,7 +20,7 @@ class LabelType extends LabelTypeAbstract
 
     public function getLabelType(): string
     {
-        return $this->labelType ?? LabelImageFormat::PDF->value;
+        return $this->labelType ?? LabelImageFormat::GIF->value;
     }
 
 

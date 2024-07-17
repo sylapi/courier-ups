@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Sylapi\Courier\Ups;
 
-use Sylapi\Courier\Ups\Entities\Credentials;
 use GuzzleHttp\Client;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\HandlerStack;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Sylapi\Courier\Ups\Entities\Credentials;
 
 class Session
 {
@@ -50,6 +54,7 @@ class Session
                 'transId' =>  $credentials->getTransId(),
                 'transactionSrc' => $credentials->getTransactionSrc(),
             ],
+            'handler' => $this->getDebugMiddleware()
         ]);
 
         return $this->client;
@@ -60,6 +65,39 @@ class Session
         return $this->token;   
     }
     
+    private function getDebugMiddleware(): ?HandlerStack
+    {
+        if(!$this->credentials->isDebug()) {
+            return null;
+        }
+
+        $stack = HandlerStack::create();
+
+        $stack->push(Middleware::mapRequest(function (RequestInterface $request) {
+            echo "\n----- Request -----\n";
+            echo $request->getMethod() . ' ' . $request->getUri() . " HTTP/" . $request->getProtocolVersion() . "\n";
+            foreach ($request->getHeaders() as $name => $values) {
+                echo $name . ': ' . implode(', ', $values) . "\n";
+            }
+            echo "\n" . $request->getBody() . "\n";
+            echo "-------------------\n";
+            return $request;
+        }));
+
+        $stack->push(Middleware::mapResponse(function (ResponseInterface $response) {
+            echo "\n----- Response -----\n";
+            echo "HTTP/" . $response->getProtocolVersion() . " " . $response->getStatusCode() . " " . $response->getReasonPhrase() . "\n";
+            foreach ($response->getHeaders() as $name => $values) {
+                echo $name . ': ' . implode(', ', $values) . "\n";
+            }
+            echo "\n" . $response->getBody() . "\n";
+            echo "-------------------\n";
+            return $response;
+        }));
+
+        return $stack;
+    }
+
 
     public function login(): void
     {
