@@ -7,7 +7,6 @@ use Sylapi\Courier\Contracts\Services\COD as CODContract;
 
 class COD extends CODAbstract
 {   
-
     const DEFAULT_FUNDS_CODE = '1'; //CASH
 
     public function getFundsCode(): ?string
