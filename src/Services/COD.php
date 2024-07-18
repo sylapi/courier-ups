@@ -31,11 +31,11 @@ class COD extends CODAbstract
 
         $payload = $this->getRequest();
 
-        $payload['ShipmentServiceOptions']['COD'] = [
+        $payload['ShipmentRequest']['Shipment']['ShipmentServiceOptions']['COD'] = [
             'CODFundsCode' => $this->getFundsCode(),
             'CODAmount' => [
-                'CurrencyCode' => $this->getCurrency(),
-                'MonetaryValue' => $this->getAmount()
+                'CurrencyCode' => (string) $this->getCurrency(),
+                'MonetaryValue' => (string) $this->getAmount()
             ]
         ];
 

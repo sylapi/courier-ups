@@ -32,7 +32,7 @@ class DeliveryConfirmation extends Service implements ServiceContract, Validatab
         
         $payload = $this->getRequest();
  
-        $payload['ShipmentRequest']['Shipment']['Package']['PackageServiceOptions']['DeliveryConfirmation'] = [
+        $payload['ShipmentRequest']['Shipment']['ShipmentServiceOptions']['DeliveryConfirmation'] = [
             'DCISType' => '1' //Delivery Confirmation Signature Required
         ];
  

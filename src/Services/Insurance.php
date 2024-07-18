@@ -26,9 +26,9 @@ class Insurance extends InsuranceAbstract
         
         $payload = $this->getRequest();
  
-        $payload['ShipmentRequest']['Shipment']['Package']['PackageServiceOptions']['InsuredValue'] = [
-            'CurrencyCode' => $this->getCurrency(),
-            'MonetaryValue' => $this->getAmount()
+        $payload['ShipmentRequest']['Shipment']['Package']['PackageServiceOptions']['DeclaredValue'] = [
+            'CurrencyCode' => (string) $this->getCurrency(),
+            'MonetaryValue' => (string) $this->getAmount()
         ];
  
         return $payload;
