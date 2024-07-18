@@ -54,6 +54,7 @@ class CourierPostShipment implements CourierPostShipmentContract
             $result = json_decode($stream->getBody()->getContents());
             $response->setResponse($result);
             $response->setTrackingId($booking->getShipmentId());
+            $response->setTrackingUrl($this->getTrackingURL($booking->getShipmentId()));
 
         } catch (\Exception $e) {
             throw new TransportException($e->getMessage(), $e->getCode());
@@ -63,6 +64,11 @@ class CourierPostShipment implements CourierPostShipmentContract
         $response->setShipmentId($booking->getShipmentId());
         
         return $response;
+    }
+
+
+    private function getTrackingURL(string $trackingId): string{
+        return 'https://www.ups.com/track?loc=en_US&tracknum=' . $trackingId;
     }
 
 

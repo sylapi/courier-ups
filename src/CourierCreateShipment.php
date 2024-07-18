@@ -60,6 +60,7 @@ class CourierCreateShipment implements CourierCreateShipmentContract
 
         $response->setReferenceId((string) $result->ShipmentResponse?->Response?->TransactionReference?->TransactionIdentifier);
         $response->setShipmentId((string) $result->ShipmentResponse?->ShipmentResults?->ShipmentIdentificationNumber);
+        
         return $response;
     }
 
