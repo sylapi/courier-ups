@@ -94,7 +94,8 @@ class CourierCreateShipment implements CourierCreateShipmentContract
                       'ShipperNumber' => $credentials->getShipperNumber(),
                       'Address' => [
                           'AddressLine' => [
-                              $sender->getAddress()
+                            $sender->getStreet(),
+                            $sender->getHouseNumber() . ($sender->getApartmentNumber() ? ' ' . $sender->getApartmentNumber() : '')
                           ],
                           'City' => $sender->getCity(),
                           'PostalCode' => $sender->getZipCode(),
@@ -125,7 +126,8 @@ class CourierCreateShipment implements CourierCreateShipmentContract
                     ],
                     'Address' => [
                         'AddressLine' => [
-                            $sender->getAddress()                          
+                          $sender->getStreet(),
+                          $sender->getHouseNumber() . ($sender->getApartmentNumber() ? ' ' . $sender->getApartmentNumber() : '')                      
                         ],
                         'City' => $sender->getCity(),
                         'PostalCode' => $sender->getZipCode(),
