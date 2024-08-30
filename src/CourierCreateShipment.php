@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Sylapi\Courier\Ups;
 
+use Sylapi\Courier\Ups\Session;
 use Sylapi\Courier\Contracts\Shipment;
 use Sylapi\Courier\Ups\Entities\Parcel;
+use Sylapi\Courier\Ups\Entities\Sender;
 use Sylapi\Courier\Ups\Entities\Options;
+use Sylapi\Courier\Ups\Entities\Receiver;
 use Sylapi\Courier\Ups\Entities\Credentials;
 use Sylapi\Courier\Exceptions\ValidateException;
+
 use Sylapi\Courier\Exceptions\TransportException;
 use Sylapi\Courier\Ups\Helpers\ValidateErrorsHelper;
 use Sylapi\Courier\Ups\Entities\Shipment as ShipmentEntity;
-
 use Sylapi\Courier\Ups\Responses\Shipment as ShipmentResponse;
 use Sylapi\Courier\Contracts\CourierCreateShipment as CourierCreateShipmentContract;
 
@@ -71,7 +74,13 @@ class CourierCreateShipment implements CourierCreateShipmentContract
          * @var ShipmentEntity $shipment
          */
         $options = $shipment->getOptions();
+        /**
+         * @var Sender $sender
+         */
         $sender = $shipment->getSender();
+        /**
+         * @var Receiver $receiver
+         */
         $receiver = $shipment->getReceiver();
         /**
          * @var Parcel $parcel
@@ -94,8 +103,8 @@ class CourierCreateShipment implements CourierCreateShipmentContract
                       'ShipperNumber' => $credentials->getShipperNumber(),
                       'Address' => [
                           'AddressLine' => [
-                            $sender->getStreet(),
-                            $sender->getHouseNumber() . ($sender->getApartmentNumber() ? ' ' . $sender->getApartmentNumber() : '')
+                            $sender->getAddressLine1(),
+                            $sender->getAddressLine2()
                           ],
                           'City' => $sender->getCity(),
                           'PostalCode' => $sender->getZipCode(),
@@ -111,7 +120,8 @@ class CourierCreateShipment implements CourierCreateShipmentContract
                       ],
                       'Address' => [
                           'AddressLine' => [
-                              $receiver->getAddress()                          
+                            $receiver->getAddressLine1(),
+                            $receiver->getAddressLine2()                        
                           ],
                           'City' => $receiver->getCity(),
                           'PostalCode' => $receiver->getZipCode(),

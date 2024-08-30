@@ -15,6 +15,14 @@ class Sender extends SenderAbstract
         return ($countryCode === null) ? null: strtoupper($countryCode);
     }
 
+    public function getAddressLine1(): string {   
+        return $this->getStreet();
+    }
+
+    public function getAddressLine2(): string {   
+        return  $this->getHouseNumber() . ($this->getApartmentNumber() ? ' ' . $this->getApartmentNumber() : '');
+    }
+
     public function validate(): bool
     {
         $rules = [
