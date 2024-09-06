@@ -17,7 +17,7 @@ enum SpeditionCode: string {
     case UPS_WORLDWIDE_ECONOMY_DDU = '17';
     case EXPRESS_PLUS = '54';
     case SECOND_DAY_AIR_AM = '59';
-    case UPS_SAVER = '65';
+    case UPS_EXPRESS_SAVER = '65';
     case FIRST_CLASS_MAIL = 'M2';
     case PRIORITY_MAIL = 'M3';
     case EXPEDITED_MAIL_INNOVATIONS = 'M4';
