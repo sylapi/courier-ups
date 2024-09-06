@@ -28,8 +28,10 @@ class SpeditionCodeMapper {
                 return PickupSpeditionCode::NEXT_DAY_AIR_SAVER;
             case SpeditionCode::UPS_NEXT_DAY_AIR_EARLY:
                 return PickupSpeditionCode::UPS_NEXT_DAY_AIR_EARLY;
+            case SpeditionCode::UPS_EXPRESS_SAVER:
+                return PickupSpeditionCode::UPS_SAVER;                    
             default:
-                throw new \InvalidArgumentException('Invalid spedition code, cannot map to pickup spedition code.');
+                throw new \InvalidArgumentException('SpeditionCodeMapper: Invalid spedition code, cannot map to pickup spedition code.');
         }
     }
 }
